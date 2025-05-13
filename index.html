@@ -36,8 +36,7 @@
 <body>
   <form id="crmForm">
     <h2>Prospection</h2>
-    <input type="text" id="nom" placeholder="Nom" required>
-    <input type="text" id="prenom" placeholder="Prénom" required>
+    <input type="text" id="nomprenom" placeholder="Nom Prénom" required>
 
     <input id="autocomplete" placeholder="Adresse complète" type="text" />
     <input id="codepostal" placeholder="Code postal" type="text" readonly />
@@ -84,8 +83,7 @@
       const now = new Date().toLocaleString("fr-FR");
       const data = {
         dateheure: now,
-        nom: document.getElementById("nom").value,
-        prenom: document.getElementById("prenom").value,
+        nomprenom: document.getElementById("nomprenom").value,
         adresse: document.getElementById("autocomplete").value,
         cp: document.getElementById("codepostal").value,
         ville: document.getElementById("ville").value,
@@ -105,8 +103,7 @@
 
     // Ouvre l'événement prérempli + vue jour dans Google Agenda
     function openGoogleAgenda() {
-      const nom = document.getElementById("nom").value;
-      const prenom = document.getElementById("prenom").value;
+      const nomprenom = document.getElementById("nomprenom").value;
       const adresse = document.getElementById("autocomplete").value;
       const date = document.getElementById("daterdv").value;
       const heure = document.getElementById("heurerdv").value;
@@ -121,7 +118,7 @@
       const startUTC = start.toISOString().replace(/-|:|\.\d\d\d/g,"");
       const endUTC = end.toISOString().replace(/-|:|\.\d\d\d/g,"");
 
-      const eventURL = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=RDV+${nom}+${prenom}&dates=${startUTC}/${endUTC}&details=Adresse:+${encodeURIComponent(adresse)}`;
+      const eventURL = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=RDV+${encodeURIComponent(nomprenom)}&dates=${startUTC}/${endUTC}&details=Adresse:+${encodeURIComponent(adresse)}`;
       const agendaViewURL = `https://calendar.google.com/calendar/u/0/r/day/${date}`;
 
       window.open(eventURL, "_blank");
