@@ -127,7 +127,7 @@
       const startUTC = start.toISOString().replace(/-|:|\.\d\d\d/g,"");
       const endUTC = end.toISOString().replace(/-|:|\.\d\d\d/g,"");
 
-      const eventURL = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=RDV+${encodeURIComponent(nomprenom)}&dates=${startUTC}/${endUTC}&details=Adresse:+${encodeURIComponent(adresse)}`;
+      const eventURL = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=RDV+${encodeURIComponent(nomprenom)}&dates=${startUTC}/${endUTC}&location=${encodeURIComponent(adresse)}&details=Rendez-vous commercial`;
       const agendaViewURL = `https://calendar.google.com/calendar/u/0/r/day/${date}`;
 
       window.open(eventURL, "_blank");
