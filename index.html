@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>CRM Photovoltaïque</title>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAPz59eSA-UkT2AzlQzXslwzt8V5uftFzM&libraries=places"></script>
+  <style>
+    body {
+      font-family: Arial;
+      background: #f4f4f4;
+      padding: 20px;
+    }
+    form {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      max-width: 600px;
+      margin: auto;
+    }
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+    }
+    button {
+      background-color: #093661;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      opacity: 0.9;
+    }
+  </style>
+</head>
+<body>
+  <form id="crmForm">
+    <h2>Prospection</h2>
+    <input type="text" id="nom" placeholder="Nom" required>
+    <input type="text" id="prenom" placeholder="Prénom" required>
+
+    <input id="autocomplete" placeholder="Adresse complète" type="text" />
+    <input id="codepostal" placeholder="Code postal" type="text" readonly />
+    <input id="ville" placeholder="Ville" type="text" readonly />
+
+    <input type="tel" id="tel" placeholder="Téléphone (facultatif)">
+    <input type="email" id="mail" placeholder="Email (facultatif)">
+
+    <input type="date" id="daterdv" placeholder="Date du RDV">
+    <input type="time" id="heurerdv" placeholder="Heure du RDV">
+
+    <button type="submit">Envoyer vers Google Sheets</button>
+    <button type="button" onclick="openGoogleAgenda()">Créer RDV dans Google Agenda</button>
+  </form>
+
+  <script>
+    // Google Maps Autocomplétion
+    let autocomplete;
+    function initAutocomplete() {
+      autocomplete = new google.maps.places.Autocomplete(
+        document.getElementById("autocomplete"),
+        { types: ["geocode"], componentRestrictions: { country: "fr" } }
+      );
+      autocomplete.addListener("place_changed", fillInAddress);
+    }
+
+    function fillInAddress() {
+      const place = autocomplete.getPlace();
+      let postal = "", city = "";
+      for (const comp of place.address_components) {
+        if (comp.types.includes("postal_code")) postal = comp.long_name;
+        if (comp.types.includes("locality")) city = comp.long_name;
+      }
+      document.getElementById("codepostal").value = postal;
+      document.getElementById("ville").value = city;
+    }
+
+    window.onload = initAutocomplete;
+
+    // Envoi vers Google Sheets
+    document.getElementById("crmForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      const now = new Date().toLocaleString("fr-FR");
+      const data = {
+        dateheure: now,
+        nom: document.getElementById("nom").value,
+        prenom: document.getElementById("prenom").value,
+        adresse: document.getElementById("autocomplete").value,
+        cp: document.getElementById("codepostal").value,
+        ville: document.getElementById("ville").value,
+        tel: document.getElementById("tel").value,
+        mail: document.getElementById("mail").value,
+        daterdv: document.getElementById("daterdv").value,
+        heurerdv: document.getElementById("heurerdv").value,
+      };
+
+      fetch("https://script.google.com/macros/s/AKfycbwqm952RFZA8DieF-_a7g_Y83_GZ_xH91AuY2jFnMzbBkrsrSIxweNm1kBQ2NVzwz3_1g/exec", {
+        method: "POST",
+        body: JSON.stringify(data),
+      })
+      .then(res => alert("Données envoyées avec succès !"))
+      .catch(err => alert("Erreur lors de l'envoi."));
+    });
+
+    // Ouvre l'événement prérempli + vue jour dans Google Agenda
+    function openGoogleAgenda() {
+      const nom = document.getElementById("nom").value;
+      const prenom = document.getElementById("prenom").value;
+      const adresse = document.getElementById("autocomplete").value;
+      const date = document.getElementById("daterdv").value;
+      const heure = document.getElementById("heurerdv").value;
+
+      if (!date || !heure) {
+        alert("Merci de renseigner la date et l'heure du RDV");
+        return;
+      }
+
+      const start = new Date(date + "T" + heure);
+      const end = new Date(start.getTime() + 30 * 60000); // +30 min
+      const startUTC = start.toISOString().replace(/-|:|\.\d\d\d/g,"");
+      const endUTC = end.toISOString().replace(/-|:|\.\d\d\d/g,"");
+
+      const eventURL = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=RDV+${nom}+${prenom}&dates=${startUTC}/${endUTC}&details=Adresse:+${encodeURIComponent(adresse)}`;
+      const agendaViewURL = `https://calendar.google.com/calendar/u/0/r/day/${date}`;
+
+      window.open(eventURL, "_blank");
+      window.open(agendaViewURL, "_blank");
+    }
+  </script>
+</body>
+</html>
