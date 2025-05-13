@@ -110,7 +110,7 @@
       .catch(err => alert("Erreur lors de l'envoi."));
     });
 
-    // Google Agenda : événement + vue jour
+    // Google Agenda : événement unique avec lien vue jour dans les notes
     function openGoogleAgenda() {
       const nomprenom = document.getElementById("nomprenom").value;
       const adresse = document.getElementById("autocomplete").value;
@@ -130,11 +130,10 @@
       const startUTC = start.toISOString().replace(/-|:|\.\d\d\d/g,"");
       const endUTC = end.toISOString().replace(/-|:|\.\d\d\d/g,"");
 
-      const eventURL = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=RDV+${encodeURIComponent(nomprenom)}&dates=${startUTC}/${endUTC}&location=${encodeURIComponent(fullAddress)}&details=Rendez-vous commercial`;
-      const agendaViewURL = `https://calendar.google.com/calendar/u/0/r/day/${date}`;
+      const description = `Rendez-vous commercial – Voir votre planning du jour : https://calendar.google.com/calendar/r/day/${date}`;
+      const eventURL = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=RDV+${encodeURIComponent(nomprenom)}&dates=${startUTC}/${endUTC}&location=${encodeURIComponent(fullAddress)}&details=${encodeURIComponent(description)}`;
 
       window.open(eventURL, "_blank");
-      window.open(agendaViewURL, "_blank");
     }
   </script>
 </body>
