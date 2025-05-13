@@ -114,6 +114,8 @@
     function openGoogleAgenda() {
       const nomprenom = document.getElementById("nomprenom").value;
       const adresse = document.getElementById("autocomplete").value;
+      const cp = document.getElementById("codepostal").value;
+      const ville = document.getElementById("ville").value;
       const date = document.getElementById("daterdv").value;
       const heure = document.getElementById("heurerdv").value;
 
@@ -122,12 +124,13 @@
         return;
       }
 
+      const fullAddress = `${adresse}, ${cp} ${ville}`;
       const start = new Date(date + "T" + heure);
       const end = new Date(start.getTime() + 30 * 60000);
       const startUTC = start.toISOString().replace(/-|:|\.\d\d\d/g,"");
       const endUTC = end.toISOString().replace(/-|:|\.\d\d\d/g,"");
 
-      const eventURL = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=RDV+${encodeURIComponent(nomprenom)}&dates=${startUTC}/${endUTC}&location=${encodeURIComponent(adresse)}&details=Rendez-vous commercial`;
+      const eventURL = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=RDV+${encodeURIComponent(nomprenom)}&dates=${startUTC}/${endUTC}&location=${encodeURIComponent(fullAddress)}&details=Rendez-vous commercial`;
       const agendaViewURL = `https://calendar.google.com/calendar/u/0/r/day/${date}`;
 
       window.open(eventURL, "_blank");
