@@ -85,6 +85,18 @@
 
     window.onload = initAutocomplete;
 
+    // Vérifie que l'heure est bien sur 00, 15, 30 ou 45 minutes
+    document.getElementById("heurerdv").addEventListener("change", function () {
+      const time = this.value;
+      if (!time) return;
+
+      const minutes = parseInt(time.split(":")[1]);
+      if (![0, 15, 30, 45].includes(minutes)) {
+        alert("Merci de choisir une heure avec 00, 15, 30 ou 45 minutes.");
+        this.value = ""; // reset
+      }
+    });
+
     // Envoi vers Google Sheets
     document.getElementById("crmForm").addEventListener("submit", function(e) {
       e.preventDefault();
@@ -110,7 +122,7 @@
       .catch(err => alert("Erreur lors de l'envoi."));
     });
 
-    // Google Agenda : événement unique avec lien vue jour dans les notes
+    // Google Agenda : événement avec lien vue jour
     function openGoogleAgenda() {
       const nomprenom = document.getElementById("nomprenom").value;
       const adresse = document.getElementById("autocomplete").value;
