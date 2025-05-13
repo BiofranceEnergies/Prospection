@@ -53,7 +53,7 @@
   </form>
 
   <script>
-    // Google Maps Autocomplétion
+    // Autocomplétion d'adresse avec nettoyage
     let autocomplete;
     function initAutocomplete() {
       autocomplete = new google.maps.places.Autocomplete(
@@ -70,8 +70,17 @@
         if (comp.types.includes("postal_code")) postal = comp.long_name;
         if (comp.types.includes("locality")) city = comp.long_name;
       }
+
       document.getElementById("codepostal").value = postal;
       document.getElementById("ville").value = city;
+
+      // Nettoyage de l'adresse
+      let address = place.formatted_address;
+      if (postal) address = address.replace(postal, "");
+      if (city) address = address.replace(city, "");
+      address = address.replace("France", "").replace("FRANCE", "").trim().replace(/,\s*$/, "");
+
+      document.getElementById("autocomplete").value = address.trim();
     }
 
     window.onload = initAutocomplete;
@@ -101,7 +110,7 @@
       .catch(err => alert("Erreur lors de l'envoi."));
     });
 
-    // Ouvre l'événement prérempli + vue jour dans Google Agenda
+    // Google Agenda : événement + vue jour
     function openGoogleAgenda() {
       const nomprenom = document.getElementById("nomprenom").value;
       const adresse = document.getElementById("autocomplete").value;
@@ -114,7 +123,7 @@
       }
 
       const start = new Date(date + "T" + heure);
-      const end = new Date(start.getTime() + 30 * 60000); // +30 min
+      const end = new Date(start.getTime() + 30 * 60000);
       const startUTC = start.toISOString().replace(/-|:|\.\d\d\d/g,"");
       const endUTC = end.toISOString().replace(/-|:|\.\d\d\d/g,"");
 
