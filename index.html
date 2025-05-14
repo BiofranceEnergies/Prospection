@@ -46,6 +46,7 @@
     <h2>Prospection</h2>
     <input type="text" id="nomprenom" placeholder="Nom Prénom" required>
     <input id="autocomplete" placeholder="Adresse complète" type="text" />
+    <button type="button" onclick="copierAdresse()">📋 Copier l'adresse</button>
     <input id="codepostal" placeholder="Code postal" type="text" readonly />
     <input id="ville" placeholder="Ville" type="text" readonly />
     <input type="tel" id="tel" placeholder="Téléphone (facultatif)">
@@ -103,6 +104,13 @@
       if (city) address = address.replace(city, "");
       address = address.replace("France", "").replace("FRANCE", "").trim().replace(/,\s*$/, "");
       document.getElementById("autocomplete").value = address.trim();
+    }
+
+    function copierAdresse() {
+      const adresse = document.getElementById("autocomplete").value;
+      navigator.clipboard.writeText(adresse)
+        .then(() => alert("Adresse copiée !"))
+        .catch(() => alert("Échec de la copie."));
     }
 
     window.onload = initAutocomplete;
