@@ -175,7 +175,7 @@
 
       const fullAddress = `${adresse}, ${cp} ${ville}`;
       const start = new Date(date + "T" + heure);
-      const end = new Date(start.getTime() + 30 * 60000);
+      const end = new Date(start.getTime() + 2 * 60 * 60000); // 2 heures
       const startUTC = start.toISOString().replace(/-|:|\.\d\d\d/g,"");
       const endUTC = end.toISOString().replace(/-|:|\.\d\d\d/g,"");
 
