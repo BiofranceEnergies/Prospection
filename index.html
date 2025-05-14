@@ -16,7 +16,7 @@
       box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
     }
     h2 { text-align: center; font-size: 24px; color: #093661; margin-bottom: 20px; }
-    input, select, button {
+    input, select, button, a {
       width: 100%;
       padding: 14px;
       margin: 12px 0;
@@ -24,18 +24,21 @@
       border: 1px solid #ccc;
       border-radius: 6px;
       box-sizing: border-box;
+      text-align: center;
+      display: block;
+      text-decoration: none;
     }
     label { font-weight: bold; display: block; margin: 10px 0 5px; font-size: 16px; color: #093661; }
     .checkbox-container { margin-top: 10px; }
-    button {
+    button, a {
       background-color: #093661;
       color: white;
       border: none;
       cursor: pointer;
     }
-    button:hover { background-color: #0b477e; }
+    button:hover, a:hover { background-color: #0b477e; }
     @media screen and (max-width: 600px) {
-      input, select, button { font-size: 18px; padding: 16px; }
+      input, select, button, a { font-size: 18px; padding: 16px; }
       label { font-size: 17px; }
       h2 { font-size: 22px; }
     }
@@ -77,10 +80,13 @@
     <button type="submit">Envoyer vers Google Sheets</button>
     <button type="button" onclick="openGoogleAgenda()">Créer RDV dans Google Agenda</button>
     <button type="button" onclick="copierAdresse()">📋 Copier l'adresse</button>
+    <a href="#" id="btnLocus" target="_blank" style="display:none;">🗺️ Ouvrir dans Locus Map</a>
   </form>
 
   <script>
     let autocomplete;
+    let lat = null, lng = null;
+
     function initAutocomplete() {
       autocomplete = new google.maps.places.Autocomplete(
         document.getElementById("autocomplete"),
@@ -91,6 +97,9 @@
 
     function fillInAddress() {
       const place = autocomplete.getPlace();
+      lat = place.geometry.location.lat();
+      lng = place.geometry.location.lng();
+
       let postal = "", city = "";
       for (const comp of place.address_components) {
         if (comp.types.includes("postal_code")) postal = comp.long_name;
@@ -104,18 +113,24 @@
       if (city) address = address.replace(city, "");
       address = address.replace("France", "").replace("FRANCE", "").trim().replace(/,\s*$/, "");
       document.getElementById("autocomplete").value = address.trim();
+
+      const btn = document.getElementById("btnLocus");
+      if (lat && lng) {
+        btn.href = `geo:${lat},${lng}`;
+        btn.style.display = "block";
+      }
     }
 
     function copierAdresse() {
-  const adresse = document.getElementById("autocomplete").value;
-  const cp = document.getElementById("codepostal").value;
-  const ville = document.getElementById("ville").value;
-  const fullAdresse = `${adresse}, ${cp} ${ville}`;
+      const adresse = document.getElementById("autocomplete").value;
+      const cp = document.getElementById("codepostal").value;
+      const ville = document.getElementById("ville").value;
+      const fullAdresse = `${adresse}, ${cp} ${ville}`;
 
-  navigator.clipboard.writeText(fullAdresse)
-    .then(() => alert("Adresse complète copiée !"))
-    .catch(() => alert("Échec de la copie."));
-}
+      navigator.clipboard.writeText(fullAdresse)
+        .then(() => alert("Adresse complète copiée !"))
+        .catch(() => alert("Échec de la copie."));
+    }
 
     window.onload = initAutocomplete;
 
