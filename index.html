@@ -6,13 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAPz59eSA-UkT2AzlQzXslwzt8V5uftFzM&libraries=places"></script>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f4f4f4;
-      padding: 20px;
-      margin: 0;
-    }
-
+    body { font-family: Arial; background: #f4f4f4; padding: 20px; margin: 0; }
     form {
       background: white;
       padding: 20px;
@@ -21,14 +15,7 @@
       margin: auto;
       box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
     }
-
-    h2 {
-      text-align: center;
-      font-size: 24px;
-      margin-bottom: 20px;
-      color: #093661;
-    }
-
+    h2 { text-align: center; font-size: 24px; color: #093661; margin-bottom: 20px; }
     input, select, button {
       width: 100%;
       padding: 14px;
@@ -38,47 +25,19 @@
       border-radius: 6px;
       box-sizing: border-box;
     }
-
-    label {
-      font-weight: bold;
-      display: block;
-      margin: 10px 0 5px;
-      font-size: 16px;
-      color: #093661;
-    }
-
+    label { font-weight: bold; display: block; margin: 10px 0 5px; font-size: 16px; color: #093661; }
+    .checkbox-container { margin-top: 10px; }
     button {
       background-color: #093661;
       color: white;
       border: none;
       cursor: pointer;
     }
-
-    button:hover {
-      background-color: #0b477e;
-    }
-
+    button:hover { background-color: #0b477e; }
     @media screen and (max-width: 600px) {
-      body {
-        padding: 10px;
-      }
-
-      form {
-        padding: 15px;
-      }
-
-      input, select, button {
-        font-size: 18px;
-        padding: 16px;
-      }
-
-      label {
-        font-size: 17px;
-      }
-
-      h2 {
-        font-size: 22px;
-      }
+      input, select, button { font-size: 18px; padding: 16px; }
+      label { font-size: 17px; }
+      h2 { font-size: 22px; }
     }
   </style>
 </head>
@@ -86,18 +45,17 @@
   <form id="crmForm">
     <h2>Prospection</h2>
     <input type="text" id="nomprenom" placeholder="Nom Prénom" required>
-
     <input id="autocomplete" placeholder="Adresse complète" type="text" />
     <input id="codepostal" placeholder="Code postal" type="text" readonly />
     <input id="ville" placeholder="Ville" type="text" readonly />
-
     <input type="tel" id="tel" placeholder="Téléphone (facultatif)">
     <input type="email" id="mail" placeholder="Email (facultatif)">
 
-    <label for="daterdv">📅 Choisir une date</label>
-    <input type="date" id="daterdv" required>
+    <label for="daterdv">🗓 Choisir une date</label>
+    <input type="date" id="daterdv">
 
-    <select id="heurerdv" required>
+    <label for="heurerdv">🕒 Choisir une heure</label>
+    <select id="heurerdv">
       <option value="">-- Choisir une heure --</option>
       <option>08:00</option><option>08:15</option><option>08:30</option><option>08:45</option>
       <option>09:00</option><option>09:15</option><option>09:30</option><option>09:45</option>
@@ -111,6 +69,10 @@
       <option>17:00</option><option>17:15</option><option>17:30</option><option>17:45</option>
       <option>18:00</option><option>18:15</option><option>18:30</option><option>18:45</option>
     </select>
+
+    <div class="checkbox-container">
+      <label><input type="checkbox" id="avp"> 🖋 J'ai laissé un avis de passage (AVP)</label>
+    </div>
 
     <button type="submit">Envoyer vers Google Sheets</button>
     <button type="button" onclick="openGoogleAgenda()">Créer RDV dans Google Agenda</button>
@@ -133,7 +95,6 @@
         if (comp.types.includes("postal_code")) postal = comp.long_name;
         if (comp.types.includes("locality")) city = comp.long_name;
       }
-
       document.getElementById("codepostal").value = postal;
       document.getElementById("ville").value = city;
 
@@ -141,7 +102,6 @@
       if (postal) address = address.replace(postal, "");
       if (city) address = address.replace(city, "");
       address = address.replace("France", "").replace("FRANCE", "").trim().replace(/,\s*$/, "");
-
       document.getElementById("autocomplete").value = address.trim();
     }
 
@@ -149,6 +109,15 @@
 
     document.getElementById("crmForm").addEventListener("submit", function(e) {
       e.preventDefault();
+
+      const isAVP = document.getElementById("avp").checked;
+      const date = document.getElementById("daterdv").value;
+      const heure = document.getElementById("heurerdv").value;
+
+      if (!isAVP && (!date || !heure)) {
+        alert("Merci de renseigner la date et l'heure du RDV ou de cocher AVP.");
+        return;
+      }
 
       const now = new Date().toLocaleString("fr-FR");
       const data = {
@@ -159,8 +128,8 @@
         ville: document.getElementById("ville").value,
         tel: document.getElementById("tel").value,
         mail: document.getElementById("mail").value,
-        daterdv: document.getElementById("daterdv").value,
-        heurerdv: document.getElementById("heurerdv").value,
+        daterdv: isAVP ? "AVP" : date,
+        heurerdv: isAVP ? "" : heure,
       };
 
       fetch("https://script.google.com/macros/s/AKfycbwqm952RFZA8DieF-_a7g_Y83_GZ_xH91AuY2jFnMzbBkrsrSIxweNm1kBQ2NVzwz3_1g/exec", {
@@ -172,6 +141,11 @@
     });
 
     function openGoogleAgenda() {
+      if (document.getElementById("avp").checked) {
+        alert("Pas de RDV à créer si AVP.");
+        return;
+      }
+
       const nomprenom = document.getElementById("nomprenom").value;
       const adresse = document.getElementById("autocomplete").value;
       const cp = document.getElementById("codepostal").value;
@@ -186,9 +160,9 @@
 
       const fullAddress = `${adresse}, ${cp} ${ville}`;
       const start = new Date(date + "T" + heure);
-      const end = new Date(start.getTime() + 2 * 60 * 60000); // 2 heures
-      const startUTC = start.toISOString().replace(/-|:|\.\d\d\d/g,"");
-      const endUTC = end.toISOString().replace(/-|:|\.\d\d\d/g,"");
+      const end = new Date(start.getTime() + 2 * 60 * 60000);
+      const startUTC = start.toISOString().replace(/-|:|\.\d\d\d/g, "");
+      const endUTC = end.toISOString().replace(/-|:|\.\d\d\d/g, "");
 
       const description = `Rendez-vous commercial – Voir votre planning du jour : https://calendar.google.com/calendar/r/day/${date}`;
       const eventURL = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=RDV+${encodeURIComponent(nomprenom)}&dates=${startUTC}/${endUTC}&location=${encodeURIComponent(fullAddress)}&details=${encodeURIComponent(description)}`;
