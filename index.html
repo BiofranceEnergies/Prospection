@@ -107,11 +107,15 @@
     }
 
     function copierAdresse() {
-      const adresse = document.getElementById("autocomplete").value;
-      navigator.clipboard.writeText(adresse)
-        .then(() => alert("Adresse copiée !"))
-        .catch(() => alert("Échec de la copie."));
-    }
+  const adresse = document.getElementById("autocomplete").value;
+  const cp = document.getElementById("codepostal").value;
+  const ville = document.getElementById("ville").value;
+  const fullAdresse = `${adresse}, ${cp} ${ville}`;
+
+  navigator.clipboard.writeText(fullAdresse)
+    .then(() => alert("Adresse complète copiée !"))
+    .catch(() => alert("Échec de la copie."));
+}
 
     window.onload = initAutocomplete;
 
