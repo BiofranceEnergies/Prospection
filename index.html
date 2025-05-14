@@ -95,30 +95,36 @@
     }
 
     function fillInAddress() {
-      const place = autocomplete.getPlace();
-      lat = place.geometry.location.lat();
-      lng = place.geometry.location.lng();
+  const place = autocomplete.getPlace();
+  lat = place.geometry.location.lat();
+  lng = place.geometry.location.lng();
 
-      let postal = "", city = "";
-      for (const comp of place.address_components) {
-        if (comp.types.includes("postal_code")) postal = comp.long_name;
-        if (comp.types.includes("locality")) city = comp.long_name;
-      }
-      document.getElementById("codepostal").value = postal;
-      document.getElementById("ville").value = city;
+  let postal = "", city = "";
+  for (const comp of place.address_components) {
+    if (comp.types.includes("postal_code")) postal = comp.long_name;
+    if (comp.types.includes("locality")) city = comp.long_name;
+  }
+  document.getElementById("codepostal").value = postal;
+  document.getElementById("ville").value = city;
 
-      let address = place.formatted_address;
-      if (postal) address = address.replace(postal, "");
-      if (city) address = address.replace(city, "");
-      address = address.replace("France", "").replace("FRANCE", "").trim().replace(/,\s*$/, "");
-      document.getElementById("autocomplete").value = address.trim();
+  let address = place.formatted_address;
+  if (postal) address = address.replace(postal, "");
+  if (city) address = address.replace(city, "");
+  address = address.replace("France", "")
+                   .replace("FRANCE", "")
+                   .replace(/,+/g, ",")
+                   .replace(/,\s*$/, "")
+                   .trim();
 
-      const btn = document.getElementById("btnLocus");
-      if (lat && lng) {
-        btn.href = `geo:${lat},${lng}`;
-        btn.style.display = "block";
-      }
-    }
+  document.getElementById("autocomplete").value = address;
+
+  const btn = document.getElementById("btnLocus");
+  if (lat && lng) {
+    btn.href = `geo:${lat},${lng}`;
+    btn.style.display = "block";
+  }
+}
+
 
     function copierAdresse() {
       const adresse = document.getElementById("autocomplete").value;
