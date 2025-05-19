@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>CRM Photovoltaïque</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Clé API 1 : pour Autocomplétion -->
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAPz59eSA-UkT2AzlQzXslwzt8V5uftFzM&libraries=places"></script>
   <style>
     body { font-family: Arial; background: #f4f4f4; padding: 20px; margin: 0; }
@@ -137,23 +138,13 @@
             .then(data => {
               if (data.status === "OK") {
                 const result = data.results[0];
+                document.getElementById("autocomplete").value = result.formatted_address;
 
                 let cp = "", ville = "";
                 for (const comp of result.address_components) {
                   if (comp.types.includes("postal_code")) cp = comp.long_name;
                   if (comp.types.includes("locality")) ville = comp.long_name;
                 }
-
-                let adresse = result.formatted_address;
-                if (cp) adresse = adresse.replace(cp, "");
-                if (ville) adresse = adresse.replace(ville, "");
-                adresse = adresse.replace("France", "")
-                                 .replace("FRANCE", "")
-                                 .replace(/,+/g, ",")
-                                 .replace(/,\s*$/, "")
-                                 .trim();
-
-                document.getElementById("autocomplete").value = adresse;
                 document.getElementById("codepostal").value = cp;
                 document.getElementById("ville").value = ville;
 
