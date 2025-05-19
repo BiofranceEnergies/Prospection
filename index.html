@@ -132,7 +132,7 @@
           const lat = position.coords.latitude;
           const lng = position.coords.longitude;
 
-          fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyAPz59eSA-UkT2AzlQzXslwzt8V5uftFzM`)
+          fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyAEW7w425BC_IMYCHGSx1XGUnUa4WFNGjc`)
             .then(response => response.json())
             .then(data => {
               if (data.status === "OK") {
