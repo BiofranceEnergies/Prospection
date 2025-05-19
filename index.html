@@ -49,6 +49,7 @@
     <h2>Prospection</h2>
     <input type="text" id="nomprenom" placeholder="Nom Prénom" required>
     <input id="autocomplete" placeholder="Adresse complète" type="text" />
+    <button type="button" onclick="geolocaliser()">📍 Me géolocaliser</button>
     <input id="codepostal" placeholder="Code postal" type="text" readonly />
     <input id="ville" placeholder="Ville" type="text" readonly />
     <input type="tel" id="tel" placeholder="Téléphone (facultatif)">
@@ -79,7 +80,7 @@
 
     <button type="submit">Envoyer vers Google Sheets</button>
     <button type="button" onclick="openGoogleAgenda()">Créer RDV dans Google Agenda</button>
-        <a href="#" id="btnLocus" target="_blank" style="display:none;">🗺️ Ouvrir dans Locus Map</a>
+    <a href="#" id="btnLocus" target="_blank" style="display:none;">🗺️ Ouvrir dans Locus Map</a>
   </form>
 
   <script>
@@ -95,46 +96,73 @@
     }
 
     function fillInAddress() {
-  const place = autocomplete.getPlace();
-  lat = place.geometry.location.lat();
-  lng = place.geometry.location.lng();
+      const place = autocomplete.getPlace();
+      lat = place.geometry.location.lat();
+      lng = place.geometry.location.lng();
 
-  let postal = "", city = "";
-  for (const comp of place.address_components) {
-    if (comp.types.includes("postal_code")) postal = comp.long_name;
-    if (comp.types.includes("locality")) city = comp.long_name;
-  }
-  document.getElementById("codepostal").value = postal;
-  document.getElementById("ville").value = city;
+      let postal = "", city = "";
+      for (const comp of place.address_components) {
+        if (comp.types.includes("postal_code")) postal = comp.long_name;
+        if (comp.types.includes("locality")) city = comp.long_name;
+      }
+      document.getElementById("codepostal").value = postal;
+      document.getElementById("ville").value = city;
 
-  let address = place.formatted_address;
-  if (postal) address = address.replace(postal, "");
-  if (city) address = address.replace(city, "");
-  address = address.replace("France", "")
-                   .replace("FRANCE", "")
-                   .replace(/,+/g, ",")
-                   .replace(/,\s*$/, "")
-                   .trim();
+      let address = place.formatted_address;
+      if (postal) address = address.replace(postal, "");
+      if (city) address = address.replace(city, "");
+      address = address.replace("France", "")
+                       .replace("FRANCE", "")
+                       .replace(/,+/g, ",")
+                       .replace(/,\s*$/, "")
+                       .trim();
 
-  document.getElementById("autocomplete").value = address;
+      document.getElementById("autocomplete").value = address;
 
-  const btn = document.getElementById("btnLocus");
-  if (lat && lng) {
-    btn.href = `geo:${lat},${lng}`;
-    btn.style.display = "block";
-  }
-}
+      const btn = document.getElementById("btnLocus");
+      if (lat && lng) {
+        btn.href = `geo:${lat},${lng}`;
+        btn.style.display = "block";
+      }
+    }
 
+    function geolocaliser() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(position => {
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
 
-    function copierAdresse() {
-      const adresse = document.getElementById("autocomplete").value;
-      const cp = document.getElementById("codepostal").value;
-      const ville = document.getElementById("ville").value;
-      const fullAdresse = `${adresse}, ${cp} ${ville}`;
+          fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyAPz59eSA-UkT2AzlQzXslwzt8V5uftFzM`)
+            .then(response => response.json())
+            .then(data => {
+              if (data.status === "OK") {
+                const result = data.results[0];
+                document.getElementById("autocomplete").value = result.formatted_address;
 
-      navigator.clipboard.writeText(fullAdresse)
-        .then(() => alert("Adresse complète copiée !"))
-        .catch(() => alert("Échec de la copie."));
+                let cp = "", ville = "";
+                for (const comp of result.address_components) {
+                  if (comp.types.includes("postal_code")) cp = comp.long_name;
+                  if (comp.types.includes("locality")) ville = comp.long_name;
+                }
+                document.getElementById("codepostal").value = cp;
+                document.getElementById("ville").value = ville;
+
+                const btn = document.getElementById("btnLocus");
+                if (lat && lng) {
+                  btn.href = `geo:${lat},${lng}`;
+                  btn.style.display = "block";
+                }
+              } else {
+                alert("Impossible de récupérer l'adresse : " + data.status);
+              }
+            })
+            .catch(() => alert("Erreur de requête à l'API Google Maps"));
+        }, () => {
+          alert("Géolocalisation refusée ou impossible.");
+        });
+      } else {
+        alert("Géolocalisation non supportée sur cet appareil.");
+      }
     }
 
     window.onload = initAutocomplete;
