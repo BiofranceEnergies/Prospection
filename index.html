@@ -101,24 +101,19 @@
       lat = place.geometry.location.lat();
       lng = place.geometry.location.lng();
 
-      let postal = "", city = "";
+      let postal = "", city = "", addressParts = [];
+
       for (const comp of place.address_components) {
+        if (comp.types.includes("street_number")) addressParts[0] = comp.long_name;
+        if (comp.types.includes("route")) addressParts[1] = comp.long_name;
         if (comp.types.includes("postal_code")) postal = comp.long_name;
         if (comp.types.includes("locality")) city = comp.long_name;
       }
+
+      const fullAddress = addressParts.filter(Boolean).join(" ");
+      document.getElementById("autocomplete").value = fullAddress;
       document.getElementById("codepostal").value = postal;
       document.getElementById("ville").value = city;
-
-      let address = place.formatted_address;
-      if (postal) address = address.replace(postal, "");
-      if (city) address = address.replace(city, "");
-      address = address.replace("France", "")
-                       .replace("FRANCE", "")
-                       .replace(/,+/g, ",")
-                       .replace(/,\s*$/, "")
-                       .trim();
-
-      document.getElementById("autocomplete").value = address;
 
       const btn = document.getElementById("btnLocus");
       if (lat && lng) {
@@ -138,13 +133,17 @@
             .then(data => {
               if (data.status === "OK") {
                 const result = data.results[0];
-                document.getElementById("autocomplete").value = result.formatted_address;
+                let streetNumber = "", route = "", cp = "", ville = "";
 
-                let cp = "", ville = "";
                 for (const comp of result.address_components) {
+                  if (comp.types.includes("street_number")) streetNumber = comp.long_name;
+                  if (comp.types.includes("route")) route = comp.long_name;
                   if (comp.types.includes("postal_code")) cp = comp.long_name;
                   if (comp.types.includes("locality")) ville = comp.long_name;
                 }
+
+                const adressePropre = [streetNumber, route].filter(Boolean).join(" ");
+                document.getElementById("autocomplete").value = adressePropre;
                 document.getElementById("codepostal").value = cp;
                 document.getElementById("ville").value = ville;
 
