@@ -95,7 +95,7 @@
 
     <button type="submit">Envoyer vers Google Sheets</button>
     <button type="button" onclick="openGoogleAgenda()">Créer RDV dans Google Agenda</button>
-    <a href="#" id="btnLocus" target="_blank" style="display:none;">🗺️ Ouvrir dans Google Maps</a>
+    <a href="#" id="btnLocus" target="_blank" style="display:none;">🧭 Ouvrir dans Locus Map</a>
   </form>
 
   <script>
@@ -130,8 +130,9 @@
       document.getElementById("ville").value = city;
 
       const btn = document.getElementById("btnLocus");
+      const name = encodeURIComponent(document.getElementById("nomprenom").value || "Point client");
       if (lat && lng) {
-        btn.href = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
+        btn.href = `locus://point?name=${name}&lat=${lat}&lon=${lng}`;
         btn.style.display = "block";
       }
     }
@@ -139,8 +140,8 @@
     function geolocaliser() {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(position => {
-          const lat = position.coords.latitude;
-          const lng = position.coords.longitude;
+          lat = position.coords.latitude;
+          lng = position.coords.longitude;
 
           fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyAEW7w425BC_IMYCHGSx1XGUnUa4WFNGjc`)
             .then(response => response.json())
@@ -162,8 +163,9 @@
                 document.getElementById("ville").value = ville;
 
                 const btn = document.getElementById("btnLocus");
+                const name = encodeURIComponent(document.getElementById("nomprenom").value || "Point client");
                 if (lat && lng) {
-                  btn.href = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
+                  btn.href = `locus://point?name=${name}&lat=${lat}&lon=${lng}`;
                   btn.style.display = "block";
                 }
               } else {
