@@ -95,7 +95,7 @@
 
     <button type="submit">Envoyer vers Google Sheets</button>
     <button type="button" onclick="openGoogleAgenda()">Créer RDV dans Google Agenda</button>
-    <a href="#" id="btnLocus" target="_blank" style="display:none;">🗺️ Ouvrir dans Locus Map</a>
+    <a href="#" id="btnLocus" target="_blank" style="display:none;">🗺️ Ouvrir dans Google Maps</a>
   </form>
 
   <script>
@@ -131,7 +131,7 @@
 
       const btn = document.getElementById("btnLocus");
       if (lat && lng) {
-        btn.href = `geo:${lat},${lng}`;
+        btn.href = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
         btn.style.display = "block";
       }
     }
@@ -163,7 +163,7 @@
 
                 const btn = document.getElementById("btnLocus");
                 if (lat && lng) {
-                  btn.href = `geo:${lat},${lng}`;
+                  btn.href = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
                   btn.style.display = "block";
                 }
               } else {
