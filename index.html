@@ -95,6 +95,7 @@
 
     <button type="submit">Envoyer vers Google Sheets</button>
     <button type="button" onclick="openGoogleAgenda()">Créer RDV dans Google Agenda</button>
+    <button type="button" onclick="envoyerSMS()">📩 Envoyer SMS RDV</button>
     <a href="#" id="btnLocus" target="_blank" style="display:none;">🗺️ Ouvrir dans Google Maps</a>
   </form>
 
@@ -187,52 +188,24 @@
       }
     }
 
-    window.onload = initAutocomplete;
-
-    document.getElementById("crmForm").addEventListener("submit", function(e) {
-      e.preventDefault();
-
-      const isAVP = document.getElementById("avp").checked;
-      const isPI = document.getElementById("pi").checked;
+    function envoyerSMS() {
+      const tel = document.getElementById("tel").value;
       const date = document.getElementById("daterdv").value;
       const heure = document.getElementById("heurerdv").value;
 
-      if (!isAVP && !isPI && (!date || !heure)) {
-        alert("Merci de renseigner la date et l'heure du RDV, ou de cocher AVP ou PI.");
+      if (!tel || !date || !heure) {
+        alert("Merci de renseigner le téléphone, la date et l'heure du RDV.");
         return;
       }
 
-      let daterdv = date;
-      let heurerdv = heure;
+      const dateObj = new Date(date);
+      const dateLocale = dateObj.toLocaleDateString("fr-FR", { weekday: 'long', day: 'numeric', month: 'long' });
 
-      if (isPI) {
-        daterdv = "PI";
-        heurerdv = "";
-      } else if (isAVP) {
-        daterdv = "AVP";
-        heurerdv = "";
-      }
+      const message = `RDV avec Sylvain Matignon (Biofrance Énergies) le ${dateLocale} à ${heure} pour votre étude solaire gratuite et sans engagement. À bientôt !`;
+      const smsURL = `sms:${tel}?body=${encodeURIComponent(message)}`;
 
-      const now = new Date().toLocaleString("fr-FR");
-      const data = {
-        dateheure: now,
-        nomprenom: document.getElementById("nomprenom").value,
-        adresse: document.getElementById("autocomplete").value,
-        cp: document.getElementById("codepostal").value,
-        ville: document.getElementById("ville").value,
-        tel: document.getElementById("tel").value,
-        mail: document.getElementById("mail").value,
-        daterdv: daterdv,
-        heurerdv: heurerdv,
-      };
-
-      fetch("https://script.google.com/macros/s/AKfycbwqm952RFZA8DieF-_a7g_Y83_GZ_xH91AuY2jFnMzbBkrsrSIxweNm1kBQ2NVzwz3_1g/exec", {
-        method: "POST",
-        body: JSON.stringify(data),
-      })
-      .then(res => alert("Données envoyées avec succès !"))
-      .catch(err => alert("Erreur lors de l'envoi."));
-    });
+      window.location.href = smsURL;
+    }
 
     function openGoogleAgenda() {
       if (document.getElementById("avp").checked || document.getElementById("pi").checked) {
@@ -263,6 +236,8 @@
 
       window.open(eventURL, "_blank");
     }
+
+    window.onload = initAutocomplete;
   </script>
 </body>
 </html>
