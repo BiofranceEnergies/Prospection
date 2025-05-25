@@ -237,6 +237,59 @@
       window.open(eventURL, "_blank");
     }
 
+    document.getElementById("crmForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      const isAVP = document.getElementById("avp").checked;
+      const isPI = document.getElementById("pi").checked;
+      const date = document.getElementById("daterdv").value;
+      const heure = document.getElementById("heurerdv").value;
+
+      if (!isAVP && !isPI && (!date || !heure)) {
+        alert("Merci de renseigner la date et l'heure du RDV, ou de cocher AVP ou PI.");
+        return;
+      }
+
+      let daterdv = date;
+      let heurerdv = heure;
+
+      if (isPI) {
+        daterdv = "PI";
+        heurerdv = "";
+      } else if (isAVP) {
+        daterdv = "AVP";
+        heurerdv = "";
+      }
+
+      const now = new Date().toLocaleString("fr-FR");
+      const data = {
+        dateheure: now,
+        nomprenom: document.getElementById("nomprenom").value,
+        adresse: document.getElementById("autocomplete").value,
+        cp: document.getElementById("codepostal").value,
+        ville: document.getElementById("ville").value,
+        tel: document.getElementById("tel").value,
+        mail: document.getElementById("mail").value,
+        daterdv: daterdv,
+        heurerdv: heurerdv,
+      };
+
+      fetch("https://script.google.com/macros/s/AKfycbwqm952RFZA8DieF-_a7g_Y83_GZ_xH91AuY2jFnMzbBkrsrSIxweNm1kBQ2NVzwz3_1g/exec", {
+        method: "POST",
+        body: JSON.stringify(data),
+      })
+      .then(res => {
+        if (res.ok) {
+          alert("✅ Données envoyées avec succès !");
+        } else {
+          alert("❌ Échec de l'envoi vers Google Sheets.");
+        }
+      })
+      .catch(err => {
+        alert("❌ Erreur réseau ou serveur. Vérifie ta connexion ou ton script Google.");
+      });
+    });
+
     window.onload = initAutocomplete;
   </script>
 </body>
