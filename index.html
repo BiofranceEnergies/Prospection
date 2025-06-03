@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>CRM Photovoltaïque</title>
+  <title>Prospection PV</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="manifest" href="manifest.json">
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAPz59eSA-UkT2AzlQzXslwzt8V5uftFzM&libraries=places"></script>
@@ -17,7 +17,7 @@
       box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
     }
     h2 { text-align: center; font-size: 24px; color: #093661; margin-bottom: 20px; }
-    input, select, button, a {
+    input, select, button, a, textarea {
       width: 100%;
       padding: 14px;
       margin: 12px 0;
@@ -53,7 +53,7 @@
     }
     button:hover, a:hover { background-color: #0b477e; }
     @media screen and (max-width: 600px) {
-      input, select, button, a { font-size: 18px; padding: 16px; }
+      input, select, button, a, textarea { font-size: 18px; padding: 16px; }
       label { font-size: 17px; }
       h2 { font-size: 22px; }
     }
@@ -69,6 +69,9 @@
     <input id="ville" placeholder="Ville" type="text" readonly />
     <input type="tel" id="tel" placeholder="Téléphone (facultatif)">
     <input type="email" id="mail" placeholder="Email (facultatif)">
+
+    <label for="remarques">📝 Remarques</label>
+    <textarea id="remarques" rows="4" placeholder="Exemple : toiture plate, chien méchant, bon accueil..."></textarea>
 
     <label for="daterdv">🗓 Choisir une date</label>
     <input type="date" id="daterdv">
@@ -102,113 +105,7 @@
   </form>
 
   <script>
-    let autocomplete;
-    let lat = null, lng = null;
-
-    function initAutocomplete() {
-      autocomplete = new google.maps.places.Autocomplete(
-        document.getElementById("autocomplete"),
-        { types: ["geocode"], componentRestrictions: { country: "fr" } }
-      );
-      autocomplete.addListener("place_changed", fillInAddress);
-    }
-
-    function fillInAddress() {
-      const place = autocomplete.getPlace();
-      lat = place.geometry.location.lat();
-      lng = place.geometry.location.lng();
-
-      let postal = "", city = "", addressParts = [];
-
-      for (const comp of place.address_components) {
-        if (comp.types.includes("street_number")) addressParts[0] = comp.long_name;
-        if (comp.types.includes("route")) addressParts[1] = comp.long_name;
-        if (comp.types.includes("postal_code")) postal = comp.long_name;
-        if (comp.types.includes("locality")) city = comp.long_name;
-      }
-
-      const fullAddress = addressParts.filter(Boolean).join(" ");
-      document.getElementById("autocomplete").value = fullAddress;
-      document.getElementById("codepostal").value = postal;
-      document.getElementById("ville").value = city;
-
-      const btn = document.getElementById("btnLocus");
-      if (lat && lng) {
-        btn.href = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
-        btn.style.display = "block";
-      }
-    }
-
-    function geolocaliser() {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(position => {
-          const lat = position.coords.latitude;
-          const lng = position.coords.longitude;
-
-          fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyAEW7w425BC_IMYCHGSx1XGUnUa4WFNGjc`)
-            .then(response => response.json())
-            .then(data => {
-              if (data.status === "OK") {
-                const result = data.results[0];
-                let streetNumber = "", route = "", cp = "", ville = "";
-
-                for (const comp of result.address_components) {
-                  if (comp.types.includes("street_number")) streetNumber = comp.long_name;
-                  if (comp.types.includes("route")) route = comp.long_name;
-                  if (comp.types.includes("postal_code")) cp = comp.long_name;
-                  if (comp.types.includes("locality")) ville = comp.long_name;
-                }
-
-                const adressePropre = [streetNumber, route].filter(Boolean).join(" ");
-                document.getElementById("autocomplete").value = adressePropre;
-                document.getElementById("codepostal").value = cp;
-                document.getElementById("ville").value = ville;
-
-                const btn = document.getElementById("btnLocus");
-                if (lat && lng) {
-                  btn.href = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
-                  btn.style.display = "block";
-                }
-              } else {
-                alert("Impossible de récupérer l'adresse : " + data.status);
-              }
-            })
-            .catch(() => alert("Erreur de requête à l'API Google Maps"));
-        }, () => {
-          alert("Géolocalisation refusée ou impossible.");
-        });
-      } else {
-        alert("Géolocalisation non supportée sur cet appareil.");
-      }
-    }
-
-    function exclusif(id) {
-      if (id === "avp") {
-        document.getElementById("pi").checked = false;
-      } else if (id === "pi") {
-        document.getElementById("avp").checked = false;
-      }
-    }
-
-    function envoyerSMS() {
-      const tel = document.getElementById("tel").value;
-      const date = document.getElementById("daterdv").value;
-      const heure = document.getElementById("heurerdv").value;
-
-      if (!tel || !date || !heure) {
-        alert("Merci de renseigner le téléphone, la date et l'heure du RDV.");
-        return;
-      }
-
-      const dateObj = new Date(date);
-      const dateLocale = dateObj.toLocaleDateString("fr-FR", { weekday: 'long', day: 'numeric', month: 'long' });
-
-      const message = `RDV avec Sylvain Matignon (Biofrance Énergies) le ${dateLocale} à ${heure} pour votre étude solaire gratuite et sans engagement. À bientôt !`;
-      const smsURL = `sms:${tel}?body=${encodeURIComponent(message)}`;
-
-      window.location.href = smsURL;
-    }
-
+    // Ajout des remarques dans les fonctions principales
     function openGoogleAgenda() {
       if (document.getElementById("avp").checked || document.getElementById("pi").checked) {
         alert("Pas de RDV à créer si AVP ou PI.");
@@ -222,6 +119,7 @@
       const date = document.getElementById("daterdv").value;
       const heure = document.getElementById("heurerdv").value;
       const tel = document.getElementById("tel").value;
+      const remarques = document.getElementById("remarques").value;
 
       if (!date || !heure) {
         alert("Merci de renseigner la date et l'heure du RDV");
@@ -234,7 +132,7 @@
       const startUTC = start.toISOString().replace(/-|:|\.\d\d\d/g, "");
       const endUTC = end.toISOString().replace(/-|:|\.\d\d\d/g, "");
 
-      const description = `Rendez-vous commercial\nNom : ${nomprenom}\nAdresse : ${fullAddress}\nTéléphone : ${tel || "Non renseigné"}\nVoir votre planning du jour : https://calendar.google.com/calendar/r/day/${date}`;
+      const description = `Rendez-vous commercial\nNom : ${nomprenom}\nAdresse : ${fullAddress}\nTéléphone : ${tel || "Non renseigné"}\nRemarques : ${remarques || "Aucune"}\nVoir votre planning du jour : https://calendar.google.com/calendar/r/day/${date}`;
       const titre = `RDV ${nomprenom} ${tel ? "– " + tel : ""}`;
       const eventURL = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(titre)}&dates=${startUTC}/${endUTC}&location=${encodeURIComponent(fullAddress)}&details=${encodeURIComponent(description)}`;
 
@@ -274,6 +172,7 @@
         ville: document.getElementById("ville").value,
         tel: document.getElementById("tel").value,
         mail: document.getElementById("mail").value,
+        remarques: document.getElementById("remarques").value,
         daterdv: daterdv,
         heurerdv: heurerdv,
       };
@@ -293,15 +192,6 @@
         alert("❌ Erreur réseau ou serveur. Vérifie ta connexion ou ton script Google.");
       });
     });
-
-    window.onload = initAutocomplete;
-
-    // Service Worker registration
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('service-worker.js')
-        .then(() => console.log('✅ Service Worker enregistré'))
-        .catch(err => console.error('❌ Erreur Service Worker :', err));
-    }
   </script>
 </body>
 </html>
