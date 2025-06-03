@@ -1,6 +1,6 @@
 {
-  "name": "CRM Photovoltaïque",
-  "short_name": "CRM PV",
+  "name": "Prospection PV",
+  "short_name": "Prospection PV",
   "start_url": "index.html",
   "display": "standalone",
   "background_color": "#f4f4f4",
