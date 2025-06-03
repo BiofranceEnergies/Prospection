@@ -209,35 +209,38 @@
       window.location.href = smsURL;
     }
 
-    function openGoogleAgenda() {
-      if (document.getElementById("avp").checked || document.getElementById("pi").checked) {
-        alert("Pas de RDV à créer si AVP ou PI.");
-        return;
-      }
+function openGoogleAgenda() {
+  if (document.getElementById("avp").checked || document.getElementById("pi").checked) {
+    alert("Pas de RDV à créer si AVP ou PI.");
+    return;
+  }
 
-      const nomprenom = document.getElementById("nomprenom").value;
-      const adresse = document.getElementById("autocomplete").value;
-      const cp = document.getElementById("codepostal").value;
-      const ville = document.getElementById("ville").value;
-      const date = document.getElementById("daterdv").value;
-      const heure = document.getElementById("heurerdv").value;
+  const nomprenom = document.getElementById("nomprenom").value;
+  const adresse = document.getElementById("autocomplete").value;
+  const cp = document.getElementById("codepostal").value;
+  const ville = document.getElementById("ville").value;
+  const date = document.getElementById("daterdv").value;
+  const heure = document.getElementById("heurerdv").value;
+  const tel = document.getElementById("tel").value;
 
-      if (!date || !heure) {
-        alert("Merci de renseigner la date et l'heure du RDV");
-        return;
-      }
+  if (!date || !heure) {
+    alert("Merci de renseigner la date et l'heure du RDV");
+    return;
+  }
 
-      const fullAddress = `${adresse}, ${cp} ${ville}`;
-      const start = new Date(date + "T" + heure);
-      const end = new Date(start.getTime() + 2 * 60 * 60000);
-      const startUTC = start.toISOString().replace(/-|:|\.\d\d\d/g, "");
-      const endUTC = end.toISOString().replace(/-|:|\.\d\d\d/g, "");
+  const fullAddress = `${adresse}, ${cp} ${ville}`;
+  const start = new Date(date + "T" + heure);
+  const end = new Date(start.getTime() + 2 * 60 * 60000);
+  const startUTC = start.toISOString().replace(/-|:|\.\d\d\d/g, "");
+  const endUTC = end.toISOString().replace(/-|:|\.\d\d\d/g, "");
 
-      const description = `Rendez-vous commercial – Voir votre planning du jour : https://calendar.google.com/calendar/r/day/${date}`;
-      const eventURL = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=RDV+${encodeURIComponent(nomprenom)}&dates=${startUTC}/${endUTC}&location=${encodeURIComponent(fullAddress)}&details=${encodeURIComponent(description)}`;
+  const description = `Rendez-vous commercial\nNom : ${nomprenom}\nAdresse : ${fullAddress}\nTéléphone : ${tel || "Non renseigné"}\nVoir votre planning du jour : https://calendar.google.com/calendar/r/day/${date}`;
+  const titre = `RDV ${nomprenom} ${tel ? "– " + tel : ""}`;
+  const eventURL = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(titre)}&dates=${startUTC}/${endUTC}&location=${encodeURIComponent(fullAddress)}&details=${encodeURIComponent(description)}`;
 
-      window.open(eventURL, "_blank");
-    }
+  window.open(eventURL, "_blank");
+}
+
 
     document.getElementById("crmForm").addEventListener("submit", function(e) {
       e.preventDefault();
