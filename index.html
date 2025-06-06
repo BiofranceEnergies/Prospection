@@ -101,6 +101,9 @@
     <label for="remarques">📝 Remarques</label>
     <textarea id="remarques" placeholder="Ajouter des remarques ici..." rows="4"></textarea>
 
+    <label for="coordonnees">📍 Coordonnées Google</label>
+    <input type="text" id="coordonnees" placeholder="Coordonnées GPS ici" readonly />
+
     <label for="daterdv">🗓 Choisir une date</label>
     <input type="date" id="daterdv" />
 
@@ -151,7 +154,7 @@
       href="#"
       id="btnLocus"
       style="display:none;"
-      onclick="ajouterCoordonneesDansRemarques(event)"
+      onclick="mettreAJourCoordonneesGoogle(event)"
       >🗺️ Ouvrir dans Google Maps</a
     >
   </form>
@@ -331,26 +334,19 @@ Voir votre planning du jour : https://calendar.google.com/calendar/r/day/${date}
       window.open(eventURL, "_blank");
     }
 
-    function ajouterCoordonneesDansRemarques(event) {
-      event.preventDefault(); // bloque le comportement par défaut
+    function mettreAJourCoordonneesGoogle(event) {
+      event.preventDefault();
 
       if (!lat || !lng) {
         alert("Les coordonnées GPS ne sont pas définies.");
         return;
       }
 
-      const lienGoogleMaps = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
+      const texteCoordonnees = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
 
-      // Ajoute seulement le lien dans "Remarques" sans ouvrir Google Maps
-      const textareaRemarques = document.getElementById("remarques");
-      let texteActuel = textareaRemarques.value.trim();
-
-      if (texteActuel.length > 0) {
-        texteActuel += "\n";
-      }
-
-      texteActuel += `Coordonnées GPS : ${lienGoogleMaps}`;
-      textareaRemarques.value = texteActuel;
+      // Met à jour le champ 'coordonnees' avec les coordonnées formatées
+      const inputCoordonnees = document.getElementById("coordonnees");
+      inputCoordonnees.value = texteCoordonnees;
     }
 
     document
@@ -414,7 +410,6 @@ Voir votre planning du jour : https://calendar.google.com/calendar/r/day/${date}
 
     window.onload = initAutocomplete;
 
-    // Service Worker registration
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker
         .register("service-worker.js")
