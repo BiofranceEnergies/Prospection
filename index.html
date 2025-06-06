@@ -1,13 +1,18 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>CRM Photovoltaïque</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="manifest" href="manifest.json">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="manifest" href="manifest.json" />
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAPz59eSA-UkT2AzlQzXslwzt8V5uftFzM&libraries=places"></script>
   <style>
-    body { font-family: Arial; background: #f4f4f4; padding: 20px; margin: 0; }
+    body {
+      font-family: Arial;
+      background: #f4f4f4;
+      padding: 20px;
+      margin: 0;
+    }
     form {
       background: white;
       padding: 20px;
@@ -16,8 +21,17 @@
       margin: auto;
       box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
     }
-    h2 { text-align: center; font-size: 24px; color: #093661; margin-bottom: 20px; }
-    input, select, button, a, textarea {
+    h2 {
+      text-align: center;
+      font-size: 24px;
+      color: #093661;
+      margin-bottom: 20px;
+    }
+    input,
+    select,
+    button,
+    a,
+    textarea {
       width: 100%;
       padding: 14px;
       margin: 12px 0;
@@ -45,67 +59,108 @@
       margin: 10px 0;
       text-align: center;
     }
-    button, a {
+    button,
+    a {
       background-color: #093661;
       color: white;
       border: none;
       cursor: pointer;
     }
-    button:hover, a:hover { background-color: #0b477e; }
+    button:hover,
+    a:hover {
+      background-color: #0b477e;
+    }
     @media screen and (max-width: 600px) {
-      input, select, button, a, textarea { font-size: 18px; padding: 16px; }
-      label { font-size: 17px; }
-      h2 { font-size: 22px; }
+      input,
+      select,
+      button,
+      a,
+      textarea {
+        font-size: 18px;
+        padding: 16px;
+      }
+      label {
+        font-size: 17px;
+      }
+      h2 {
+        font-size: 22px;
+      }
     }
   </style>
 </head>
 <body>
   <form id="crmForm">
     <h2>Prospection</h2>
-    <input type="text" id="nomprenom" placeholder="Nom Prénom">
+    <input type="text" id="nomprenom" placeholder="Nom Prénom" />
     <input id="autocomplete" placeholder="Adresse complète" type="text" />
     <button type="button" onclick="geolocaliser()">📍 Me géolocaliser</button>
     <input id="codepostal" placeholder="Code postal" type="text" readonly />
     <input id="ville" placeholder="Ville" type="text" readonly />
-    <input type="tel" id="tel" placeholder="Téléphone (facultatif)">
-    <input type="email" id="mail" placeholder="Email (facultatif)">
+    <input type="tel" id="tel" placeholder="Téléphone (facultatif)" />
+    <input type="email" id="mail" placeholder="Email (facultatif)" />
     <label for="remarques">📝 Remarques</label>
     <textarea id="remarques" placeholder="Ajouter des remarques ici..." rows="4"></textarea>
 
     <label for="daterdv">🗓 Choisir une date</label>
-    <input type="date" id="daterdv">
+    <input type="date" id="daterdv" />
 
     <label for="heurerdv">🕒 Choisir une heure</label>
     <select id="heurerdv">
       <option value="">-- Choisir une heure --</option>
-      <option>08:00</option><option>08:30</option>
-      <option>09:00</option><option>09:30</option>
-      <option>10:00</option><option>10:30</option>
-      <option>11:00</option><option>11:30</option>
-      <option>12:00</option><option>12:30</option>
-      <option>13:00</option><option>13:30</option>
-      <option>14:00</option><option>14:30</option>
-      <option>15:00</option><option>15:30</option>
-      <option>16:00</option><option>16:30</option>
-      <option>17:00</option><option>17:30</option>
-      <option>18:00</option><option>18:30</option>
-      <option>19:00</option><option>19:30</option>
+      <option>08:00</option>
+      <option>08:30</option>
+      <option>09:00</option>
+      <option>09:30</option>
+      <option>10:00</option>
+      <option>10:30</option>
+      <option>11:00</option>
+      <option>11:30</option>
+      <option>12:00</option>
+      <option>12:30</option>
+      <option>13:00</option>
+      <option>13:30</option>
+      <option>14:00</option>
+      <option>14:30</option>
+      <option>15:00</option>
+      <option>15:30</option>
+      <option>16:00</option>
+      <option>16:30</option>
+      <option>17:00</option>
+      <option>17:30</option>
+      <option>18:00</option>
+      <option>18:30</option>
+      <option>19:00</option>
+      <option>19:30</option>
     </select>
 
     <div class="checkbox-container">
-      <label><input type="checkbox" id="avp" onclick="exclusif('avp')"> 🖋 J'ai laissé un avis de passage (AVP)</label>
-      <label><input type="checkbox" id="pi" onclick="exclusif('pi')"> 🚫 Pas intéressé (PI)</label>
+      <label
+        ><input type="checkbox" id="avp" onclick="exclusif('avp')" /> 🖋 J'ai
+        laissé un avis de passage (AVP)</label
+      >
+      <label
+        ><input type="checkbox" id="pi" onclick="exclusif('pi')" /> 🚫 Pas
+        intéressé (PI)</label
+      >
     </div>
 
     <button type="submit">Envoyer vers Google Sheets</button>
     <button type="button" onclick="openGoogleAgenda()">Créer RDV dans Google Agenda</button>
     <button type="button" onclick="envoyerSMS()">📩 Envoyer SMS RDV</button>
-    <a href="#" id="btnLocus" target="_blank" style="display:none;">🗺️ Ouvrir dans Google Maps</a>
+    <a
+      href="#"
+      id="btnLocus"
+      target="_blank"
+      style="display:none;"
+      onclick="ajouterCoordonneesDansRemarques(event)"
+      >🗺️ Ouvrir dans Google Maps</a
+    >
   </form>
 
   <script>
     let autocomplete;
-    let lat = null, lng = null;
+    let lat = null,
+      lng = null;
 
     function initAutocomplete() {
       autocomplete = new google.maps.places.Autocomplete(
@@ -120,7 +175,9 @@
       lat = place.geometry.location.lat();
       lng = place.geometry.location.lng();
 
-      let postal = "", city = "", addressParts = [];
+      let postal = "",
+        city = "",
+        addressParts = [];
 
       for (const comp of place.address_components) {
         if (comp.types.includes("street_number")) addressParts[0] = comp.long_name;
@@ -143,42 +200,56 @@
 
     function geolocaliser() {
       if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(position => {
-          const lat = position.coords.latitude;
-          const lng = position.coords.longitude;
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
 
-          fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyAEW7w425BC_IMYCHGSx1XGUnUa4WFNGjc`)
-            .then(response => response.json())
-            .then(data => {
-              if (data.status === "OK") {
-                const result = data.results[0];
-                let streetNumber = "", route = "", cp = "", ville = "";
+            fetch(
+              `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=AIzaSyAEW7w425BC_IMYCHGSx1XGUnUa4WFNGjc`
+            )
+              .then((response) => response.json())
+              .then((data) => {
+                if (data.status === "OK") {
+                  const result = data.results[0];
+                  let streetNumber = "",
+                    route = "",
+                    cp = "",
+                    ville = "";
 
-                for (const comp of result.address_components) {
-                  if (comp.types.includes("street_number")) streetNumber = comp.long_name;
-                  if (comp.types.includes("route")) route = comp.long_name;
-                  if (comp.types.includes("postal_code")) cp = comp.long_name;
-                  if (comp.types.includes("locality")) ville = comp.long_name;
+                  for (const comp of result.address_components) {
+                    if (comp.types.includes("street_number"))
+                      streetNumber = comp.long_name;
+                    if (comp.types.includes("route")) route = comp.long_name;
+                    if (comp.types.includes("postal_code")) cp = comp.long_name;
+                    if (comp.types.includes("locality")) ville = comp.long_name;
+                  }
+
+                  const adressePropre = [streetNumber, route]
+                    .filter(Boolean)
+                    .join(" ");
+                  document.getElementById("autocomplete").value = adressePropre;
+                  document.getElementById("codepostal").value = cp;
+                  document.getElementById("ville").value = ville;
+
+                  lat = latitude;
+                  lng = longitude;
+
+                  const btn = document.getElementById("btnLocus");
+                  if (lat && lng) {
+                    btn.href = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
+                    btn.style.display = "block";
+                  }
+                } else {
+                  alert("Impossible de récupérer l'adresse : " + data.status);
                 }
-
-                const adressePropre = [streetNumber, route].filter(Boolean).join(" ");
-                document.getElementById("autocomplete").value = adressePropre;
-                document.getElementById("codepostal").value = cp;
-                document.getElementById("ville").value = ville;
-
-                const btn = document.getElementById("btnLocus");
-                if (lat && lng) {
-                  btn.href = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
-                  btn.style.display = "block";
-                }
-              } else {
-                alert("Impossible de récupérer l'adresse : " + data.status);
-              }
-            })
-            .catch(() => alert("Erreur de requête à l'API Google Maps"));
-        }, () => {
-          alert("Géolocalisation refusée ou impossible.");
-        });
+              })
+              .catch(() => alert("Erreur de requête à l'API Google Maps"));
+          },
+          () => {
+            alert("Géolocalisation refusée ou impossible.");
+          }
+        );
       } else {
         alert("Géolocalisation non supportée sur cet appareil.");
       }
@@ -203,7 +274,11 @@
       }
 
       const dateObj = new Date(date);
-      const dateLocale = dateObj.toLocaleDateString("fr-FR", { weekday: 'long', day: 'numeric', month: 'long' });
+      const dateLocale = dateObj.toLocaleDateString("fr-FR", {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+      });
 
       const message = `RDV avec Sylvain Matignon (Biofrance Énergies) le ${dateLocale} à ${heure} pour votre étude solaire gratuite et sans engagement. À bientôt !`;
       const smsURL = `sms:${tel}?body=${encodeURIComponent(message)}`;
@@ -212,46 +287,74 @@
     }
 
     function openGoogleAgenda() {
-  if (document.getElementById("avp").checked || document.getElementById("pi").checked) {
-    alert("Pas de RDV à créer si AVP ou PI.");
-    return;
-  }
+      if (document.getElementById("avp").checked || document.getElementById("pi").checked) {
+        alert("Pas de RDV à créer si AVP ou PI.");
+        return;
+      }
 
-  const nomprenom = document.getElementById("nomprenom").value;
-  const adresse = document.getElementById("autocomplete").value;
-  const cp = document.getElementById("codepostal").value;
-  const ville = document.getElementById("ville").value;
-  const date = document.getElementById("daterdv").value;
-  const heure = document.getElementById("heurerdv").value;
-  const tel = document.getElementById("tel").value;
-  const remarques = document.getElementById("remarques").value;
+      const nomprenom = document.getElementById("nomprenom").value;
+      const adresse = document.getElementById("autocomplete").value;
+      const cp = document.getElementById("codepostal").value;
+      const ville = document.getElementById("ville").value;
+      const date = document.getElementById("daterdv").value;
+      const heure = document.getElementById("heurerdv").value;
+      const tel = document.getElementById("tel").value;
+      const remarques = document.getElementById("remarques").value;
 
-  if (!date || !heure) {
-    alert("Merci de renseigner la date et l'heure du RDV");
-    return;
-  }
+      if (!date || !heure) {
+        alert("Merci de renseigner la date et l'heure du RDV");
+        return;
+      }
 
-  const fullAddress = `${adresse}, ${cp} ${ville}`;
-  const start = new Date(date + "T" + heure);
-  const end = new Date(start.getTime() + 2 * 60 * 60000);
-  const startUTC = start.toISOString().replace(/-|:|\.\d\d\d/g, "");
-  const endUTC = end.toISOString().replace(/-|:|\.\d\d\d/g, "");
+      const fullAddress = `${adresse}, ${cp} ${ville}`;
+      const start = new Date(date + "T" + heure);
+      const end = new Date(start.getTime() + 2 * 60 * 60000);
+      const startUTC = start.toISOString().replace(/-|:|\.\d\d\d/g, "");
+      const endUTC = end.toISOString().replace(/-|:|\.\d\d\d/g, "");
 
-  const description = `Rendez-vous commercial
+      const description = `Rendez-vous commercial
 Nom : ${nomprenom}
 Adresse : ${fullAddress}
 Téléphone : ${tel || "Non renseigné"}
 Remarques : ${remarques || "Aucune"}
 Voir votre planning du jour : https://calendar.google.com/calendar/r/day/${date}`;
 
-  const titre = `RDV ${nomprenom} ${tel ? "– " + tel : ""}`;
-  const eventURL = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(titre)}&dates=${startUTC}/${endUTC}&location=${encodeURIComponent(fullAddress)}&details=${encodeURIComponent(description)}`;
+      const titre = `RDV ${nomprenom} ${tel ? "– " + tel : ""}`;
+      const eventURL = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(
+        titre
+      )}&dates=${startUTC}/${endUTC}&location=${encodeURIComponent(
+        fullAddress
+      )}&details=${encodeURIComponent(description)}`;
 
-  window.open(eventURL, "_blank");
-}
+      window.open(eventURL, "_blank");
+    }
 
+    function ajouterCoordonneesDansRemarques(event) {
+      event.preventDefault(); // bloquer le comportement par défaut (ouverture du lien)
 
-    document.getElementById("crmForm").addEventListener("submit", function(e) {
+      if (!lat || !lng) {
+        alert("Les coordonnées GPS ne sont pas définies.");
+        return;
+      }
+
+      const lienGoogleMaps = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
+
+      // Ouvrir Google Maps dans un nouvel onglet
+      window.open(lienGoogleMaps, "_blank");
+
+      // Ajouter le lien dans la zone "remarques", en gardant ce qui est déjà écrit
+      const textareaRemarques = document.getElementById("remarques");
+      let texteActuel = textareaRemarques.value.trim();
+
+      if (texteActuel.length > 0) {
+        texteActuel += "\n";
+      }
+
+      texteActuel += `Coordonnées GPS : ${lienGoogleMaps}`;
+      textareaRemarques.value = texteActuel;
+    }
+
+    document.getElementById("crmForm").addEventListener("submit", function (e) {
       e.preventDefault();
 
       const isAVP = document.getElementById("avp").checked;
@@ -289,29 +392,33 @@ Voir votre planning du jour : https://calendar.google.com/calendar/r/day/${date}
         heurerdv: heurerdv,
       };
 
-      fetch("https://script.google.com/macros/s/AKfycbwqm952RFZA8DieF-_a7g_Y83_GZ_xH91AuY2jFnMzbBkrsrSIxweNm1kBQ2NVzwz3_1g/exec", {
-        method: "POST",
-        body: JSON.stringify(data),
-      })
-      .then(res => {
-        if (res.ok) {
-          alert("✅ Données envoyées avec succès !");
-        } else {
-          alert("❌ Échec de l'envoi vers Google Sheets.");
+      fetch(
+        "https://script.google.com/macros/s/AKfycbwqm952RFZA8DieF-_a7g_Y83_GZ_xH91AuY2jFnMzbBkrsrSIxweNm1kBQ2NVzwz3_1g/exec",
+        {
+          method: "POST",
+          body: JSON.stringify(data),
         }
-      })
-      .catch(err => {
-        alert("❌ Erreur réseau ou serveur. Vérifie ta connexion ou ton script Google.");
-      });
+      )
+        .then((res) => {
+          if (res.ok) {
+            alert("✅ Données envoyées avec succès !");
+          } else {
+            alert("❌ Échec de l'envoi vers Google Sheets.");
+          }
+        })
+        .catch((err) => {
+          alert("❌ Erreur réseau ou serveur. Vérifie ta connexion ou ton script Google.");
+        });
     });
 
     window.onload = initAutocomplete;
 
     // Service Worker registration
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('service-worker.js')
-        .then(() => console.log('✅ Service Worker enregistré'))
-        .catch(err => console.error('❌ Erreur Service Worker :', err));
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker
+        .register("service-worker.js")
+        .then(() => console.log("✅ Service Worker enregistré"))
+        .catch((err) => console.error("❌ Erreur Service Worker :", err));
     }
   </script>
 </body>
