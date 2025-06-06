@@ -7,6 +7,7 @@
   <link rel="manifest" href="manifest.json" />
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAPz59eSA-UkT2AzlQzXslwzt8V5uftFzM&libraries=places"></script>
   <style>
+    /* Styles inchangés, copie ceux précédents */
     body {
       font-family: Arial;
       background: #f4f4f4;
@@ -137,32 +138,19 @@
     </select>
 
     <div class="checkbox-container">
-      <label
-        ><input type="checkbox" id="avp" onclick="exclusif('avp')" /> 🖋 J'ai
-        laissé un avis de passage (AVP)</label
-      >
-      <label
-        ><input type="checkbox" id="pi" onclick="exclusif('pi')" /> 🚫 Pas
-        intéressé (PI)</label
-      >
+      <label><input type="checkbox" id="avp" onclick="exclusif('avp')" /> 🖋 J'ai laissé un avis de passage (AVP)</label>
+      <label><input type="checkbox" id="pi" onclick="exclusif('pi')" /> 🚫 Pas intéressé (PI)</label>
     </div>
 
     <button type="submit">Envoyer vers Google Sheets</button>
     <button type="button" onclick="openGoogleAgenda()">Créer RDV dans Google Agenda</button>
     <button type="button" onclick="envoyerSMS()">📩 Envoyer SMS RDV</button>
-    <a
-      href="#"
-      id="btnLocus"
-      style="display:none;"
-      onclick="mettreAJourCoordonneesGoogle(event)"
-      >🗺️ Ouvrir dans Google Maps</a
-    >
+    <a href="#" id="btnLocus" style="display:none;" onclick="mettreAJourCoordonneesGoogle(event)">🗺️ Ouvrir dans Google Maps</a>
   </form>
 
   <script>
     let autocomplete;
-    let lat = null,
-      lng = null;
+    let lat = null, lng = null;
 
     function initAutocomplete() {
       autocomplete = new google.maps.places.Autocomplete(
@@ -177,9 +165,7 @@
       lat = place.geometry.location.lat();
       lng = place.geometry.location.lng();
 
-      let postal = "",
-        city = "",
-        addressParts = [];
+      let postal = "", city = "", addressParts = [];
 
       for (const comp of place.address_components) {
         if (comp.types.includes("street_number")) addressParts[0] = comp.long_name;
@@ -202,56 +188,45 @@
 
     function geolocaliser() {
       if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            const latitude = position.coords.latitude;
-            const longitude = position.coords.longitude;
+        navigator.geolocation.getCurrentPosition(position => {
+          const latitude = position.coords.latitude;
+          const longitude = position.coords.longitude;
 
-            fetch(
-              `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=AIzaSyAEW7w425BC_IMYCHGSx1XGUnUa4WFNGjc`
-            )
-              .then((response) => response.json())
-              .then((data) => {
-                if (data.status === "OK") {
-                  const result = data.results[0];
-                  let streetNumber = "",
-                    route = "",
-                    cp = "",
-                    ville = "";
+          fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=AIzaSyAEW7w425BC_IMYCHGSx1XGUnUa4WFNGjc`)
+            .then(response => response.json())
+            .then(data => {
+              if (data.status === "OK") {
+                const result = data.results[0];
+                let streetNumber = "", route = "", cp = "", ville = "";
 
-                  for (const comp of result.address_components) {
-                    if (comp.types.includes("street_number"))
-                      streetNumber = comp.long_name;
-                    if (comp.types.includes("route")) route = comp.long_name;
-                    if (comp.types.includes("postal_code")) cp = comp.long_name;
-                    if (comp.types.includes("locality")) ville = comp.long_name;
-                  }
-
-                  const adressePropre = [streetNumber, route]
-                    .filter(Boolean)
-                    .join(" ");
-                  document.getElementById("autocomplete").value = adressePropre;
-                  document.getElementById("codepostal").value = cp;
-                  document.getElementById("ville").value = ville;
-
-                  lat = latitude;
-                  lng = longitude;
-
-                  const btn = document.getElementById("btnLocus");
-                  if (lat && lng) {
-                    btn.href = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
-                    btn.style.display = "block";
-                  }
-                } else {
-                  alert("Impossible de récupérer l'adresse : " + data.status);
+                for (const comp of result.address_components) {
+                  if (comp.types.includes("street_number")) streetNumber = comp.long_name;
+                  if (comp.types.includes("route")) route = comp.long_name;
+                  if (comp.types.includes("postal_code")) cp = comp.long_name;
+                  if (comp.types.includes("locality")) ville = comp.long_name;
                 }
-              })
-              .catch(() => alert("Erreur de requête à l'API Google Maps"));
-          },
-          () => {
-            alert("Géolocalisation refusée ou impossible.");
-          }
-        );
+
+                const adressePropre = [streetNumber, route].filter(Boolean).join(" ");
+                document.getElementById("autocomplete").value = adressePropre;
+                document.getElementById("codepostal").value = cp;
+                document.getElementById("ville").value = ville;
+
+                lat = latitude;
+                lng = longitude;
+
+                const btn = document.getElementById("btnLocus");
+                if (lat && lng) {
+                  btn.href = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
+                  btn.style.display = "block";
+                }
+              } else {
+                alert("Impossible de récupérer l'adresse : " + data.status);
+              }
+            })
+            .catch(() => alert("Erreur de requête à l'API Google Maps"));
+        }, () => {
+          alert("Géolocalisation refusée ou impossible.");
+        });
       } else {
         alert("Géolocalisation non supportée sur cet appareil.");
       }
@@ -277,9 +252,7 @@
 
       const dateObj = new Date(date);
       const dateLocale = dateObj.toLocaleDateString("fr-FR", {
-        weekday: "long",
-        day: "numeric",
-        month: "long",
+        weekday: 'long', day: 'numeric', month: 'long'
       });
 
       const message = `RDV avec Sylvain Matignon (Biofrance Énergies) le ${dateLocale} à ${heure} pour votre étude solaire gratuite et sans engagement. À bientôt !`;
@@ -289,10 +262,7 @@
     }
 
     function openGoogleAgenda() {
-      if (
-        document.getElementById("avp").checked ||
-        document.getElementById("pi").checked
-      ) {
+      if (document.getElementById("avp").checked || document.getElementById("pi").checked) {
         alert("Pas de RDV à créer si AVP ou PI.");
         return;
       }
@@ -325,11 +295,7 @@ Remarques : ${remarques || "Aucune"}
 Voir votre planning du jour : https://calendar.google.com/calendar/r/day/${date}`;
 
       const titre = `RDV ${nomprenom} ${tel ? "– " + tel : ""}`;
-      const eventURL = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(
-        titre
-      )}&dates=${startUTC}/${endUTC}&location=${encodeURIComponent(
-        fullAddress
-      )}&details=${encodeURIComponent(description)}`;
+      const eventURL = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(titre)}&dates=${startUTC}/${endUTC}&location=${encodeURIComponent(fullAddress)}&details=${encodeURIComponent(description)}`;
 
       window.open(eventURL, "_blank");
     }
@@ -344,77 +310,71 @@ Voir votre planning du jour : https://calendar.google.com/calendar/r/day/${date}
 
       const texteCoordonnees = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
 
-      // Met à jour le champ 'coordonnees' avec les coordonnées formatées
       const inputCoordonnees = document.getElementById("coordonnees");
       inputCoordonnees.value = texteCoordonnees;
     }
 
-    document
-      .getElementById("crmForm")
-      .addEventListener("submit", function (e) {
-        e.preventDefault();
+    document.getElementById("crmForm").addEventListener("submit", function(e) {
+      e.preventDefault();
 
-        const isAVP = document.getElementById("avp").checked;
-        const isPI = document.getElementById("pi").checked;
-        const date = document.getElementById("daterdv").value;
-        const heure = document.getElementById("heurerdv").value;
+      const isAVP = document.getElementById("avp").checked;
+      const isPI = document.getElementById("pi").checked;
+      const date = document.getElementById("daterdv").value;
+      const heure = document.getElementById("heurerdv").value;
 
-        if (!isAVP && !isPI && (!date || !heure)) {
-          alert("Merci de renseigner la date et l'heure du RDV, ou de cocher AVP ou PI.");
-          return;
+      if (!isAVP && !isPI && (!date || !heure)) {
+        alert("Merci de renseigner la date et l'heure du RDV, ou de cocher AVP ou PI.");
+        return;
+      }
+
+      let daterdv = date;
+      let heurerdv = heure;
+
+      if (isPI) {
+        daterdv = "PI";
+        heurerdv = "";
+      } else if (isAVP) {
+        daterdv = "AVP";
+        heurerdv = "";
+      }
+
+      const now = new Date().toLocaleString("fr-FR");
+      const data = {
+        dateheure: now,
+        nomprenom: document.getElementById("nomprenom").value,
+        adresse: document.getElementById("autocomplete").value,
+        cp: document.getElementById("codepostal").value,
+        ville: document.getElementById("ville").value,
+        tel: document.getElementById("tel").value,
+        mail: document.getElementById("mail").value,
+        remarques: document.getElementById("remarques").value,
+        gps: document.getElementById("coordonnees").value || "",
+        daterdv: daterdv,
+        heurerdv: heurerdv,
+      };
+
+      fetch("https://script.google.com/macros/s/AKfycbwqm952RFZA8DieF-_a7g_Y83_GZ_xH91AuY2jFnMzbBkrsrSIxweNm1kBQ2NVzwz3_1g/exec", {
+        method: "POST",
+        body: JSON.stringify(data),
+      })
+      .then(res => {
+        if (res.ok) {
+          alert("✅ Données envoyées avec succès !");
+        } else {
+          alert("❌ Échec de l'envoi vers Google Sheets.");
         }
-
-        let daterdv = date;
-        let heurerdv = heure;
-
-        if (isPI) {
-          daterdv = "PI";
-          heurerdv = "";
-        } else if (isAVP) {
-          daterdv = "AVP";
-          heurerdv = "";
-        }
-
-        const now = new Date().toLocaleString("fr-FR");
-        const data = {
-          dateheure: now,
-          nomprenom: document.getElementById("nomprenom").value,
-          adresse: document.getElementById("autocomplete").value,
-          cp: document.getElementById("codepostal").value,
-          ville: document.getElementById("ville").value,
-          tel: document.getElementById("tel").value,
-          mail: document.getElementById("mail").value,
-          remarques: document.getElementById("remarques").value,
-          daterdv: daterdv,
-          heurerdv: heurerdv,
-        };
-
-        fetch(
-          "https://script.google.com/macros/s/AKfycbwqm952RFZA8DieF-_a7g_Y83_GZ_xH91AuY2jFnMzbBkrsrSIxweNm1kBQ2NVzwz3_1g/exec",
-          {
-            method: "POST",
-            body: JSON.stringify(data),
-          }
-        )
-          .then((res) => {
-            if (res.ok) {
-              alert("✅ Données envoyées avec succès !");
-            } else {
-              alert("❌ Échec de l'envoi vers Google Sheets.");
-            }
-          })
-          .catch((err) => {
-            alert("❌ Erreur réseau ou serveur. Vérifie ta connexion ou ton script Google.");
-          });
+      })
+      .catch(err => {
+        alert("❌ Erreur réseau ou serveur. Vérifie ta connexion ou ton script Google.");
       });
+    });
 
     window.onload = initAutocomplete;
 
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker
-        .register("service-worker.js")
-        .then(() => console.log("✅ Service Worker enregistré"))
-        .catch((err) => console.error("❌ Erreur Service Worker :", err));
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js')
+        .then(() => console.log('✅ Service Worker enregistré'))
+        .catch(err => console.error('❌ Erreur Service Worker :', err));
     }
   </script>
 </body>
